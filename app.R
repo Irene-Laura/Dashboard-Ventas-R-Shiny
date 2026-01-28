@@ -50,31 +50,25 @@ ventas <- base %>%
   mutate(across(starts_with("nombre_"), ~replace_na(.x, "Sin dato")))
 
 # --- INTERFAZ (UI) ---
-# --- INTERFAZ (UI) RESPONSIVA COMPLETA ---
 ui <- page_sidebar(
   theme = bs_theme(version = 5, bootswatch = "cosmo") %>%
     bs_add_rules("
-      .value-box-title { font-size: 0.85rem !important; text-align: center; }
-      .value-box-value { font-size: 1.1rem !important; text-align: center; }
-      .table-responsive { overflow-x: auto; display: block; width: 100%; }
-      .insight-box { padding: 20px; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-top: 15px; }
+      .value-box-title, .value-box-value { text-align: center !important; width: 100% !important; display: block !important; }
+      .value-box { height: 115px !important; }
+      .insight-box { padding: 20px; background: #ffffff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-top: 15px; min-height: 200px; }
       .btn-download { margin-top: 10px; margin-bottom: 10px; }
-      @media (max-width: 576px) {
-        .value-box { height: auto !important; min-height: 90px; }
-      }
     "),
   title = "Análisis de Ventas de Tienda de Golosinas",
   
   sidebar = sidebar(
-    title = "Filtros",
+    title = "Filtros de Análisis",
     selectInput("anio", "Años:", choices = sort(unique(ventas$anio)), selected = unique(ventas$anio), multiple = TRUE),
     radioButtons("metrica_ranking", "Ver por:", choices = list("Facturación ($)" = "fact", "Unidades (Cantidad)" = "unid")),
-    selectInput("top_n", "Top N:", choices = list("5" = 5, "10" = 10, "15" = 15), selected = 5)
+    selectInput("top_n", "Top N Elementos:", choices = list("5" = 5, "10" = 10, "15" = 15), selected = 5)
   ),
   
-  # Usar ancho fijo en px hace que en móvil se apilen (uno abajo del otro)
   layout_column_wrap(
-    width = "180px", fill = FALSE,
+    width = 1/3, fill = FALSE,
     value_box(title = "Facturación Total", value = textOutput("txt_fact"), showcase = bs_icon("currency-dollar"), theme = "primary"),
     value_box(title = "Unidades (MM)", value = textOutput("txt_unid_total"), showcase = bs_icon("box-seam"), theme = "info"),
     value_box(title = "Margen Total", value = textOutput("txt_margen"), showcase = bs_icon("graph-up"), theme = "success"),
@@ -85,31 +79,15 @@ ui <- page_sidebar(
   
   navset_pill(
     nav_panel("⏱ Evolución",
-              layout_column_wrap(width = "400px", card(plotlyOutput("plot_trim_barras")), card(plotlyOutput("plot_unid_linea"))),
-              card(card_header("Resumen Anual"), 
-                   div(class="table-responsive", tableOutput("tabla_anual")), 
-                   downloadButton("dl_anual", "Descargar Excel", class = "btn-download btn-info"))
+              layout_column_wrap(width = 1/2, card(plotlyOutput("plot_trim_barras")), card(plotlyOutput("plot_unid_linea"))),
+              card(card_header("Resumen Anual"), tableOutput("tabla_anual"), downloadButton("dl_anual", "Descargar Excel", class = "btn-download btn-info"))
     ),
-    
-    nav_panel("🏆 Top Productos", 
-              card(plotlyOutput("bubble_prod")), 
-              card(card_header("Detalle Productos"), 
-                   div(class="table-responsive", tableOutput("tabla_productos")), 
-                   downloadButton("dl_prod", "Descargar Excel", class = "btn-download btn-info"))
-    ),
-    
-    nav_panel("👤 Top Vendedores", 
-              card(plotlyOutput("bubble_vend")), 
-              card(card_header("Detalle Vendedores"), 
-                   div(class="table-responsive", tableOutput("tabla_vendedores")), 
-                   downloadButton("dl_vend", "Descargar Excel", class = "btn-download btn-info"))
-    ),
-    
+    nav_panel("🏆 Top Productos", card(plotlyOutput("bubble_prod")), card(card_header("Detalle Productos"), tableOutput("tabla_productos"), downloadButton("dl_prod", "Descargar Excel", class = "btn-download btn-info"))),
+    nav_panel("👤 Top Vendedores", card(plotlyOutput("bubble_vend")), card(card_header("Detalle Vendedores"), tableOutput("tabla_vendedores"), downloadButton("dl_vend", "Descargar Excel", class = "btn-download btn-info"))),
     nav_panel("🏪 Canales",
-              layout_column_wrap(width = "400px", card(plotlyOutput("plot_canal_bar")), card(plotlyOutput("plot_eficiencia"))),
+              layout_column_wrap(width = 1/2, card(plotlyOutput("plot_canal_bar")), card(plotlyOutput("plot_eficiencia"))),
               card(plotlyOutput("plot_prod_canal_dist"))
     ),
-    
     nav_panel("⚠️ Anomalías",
               card(full_screen = TRUE, card_header("Análisis de Vendedores y Productos - Febrero 2024"), plotlyOutput("plot_outlier", height = "500px")),
               div(class = "insight-box",
@@ -120,11 +98,7 @@ ui <- page_sidebar(
                         <b>Margen:</b> Se destacan también los productos con margen de ganancias negativo, que deberían analizarse para revisar los precios de ventas. Se puede profundizar el análisis para saber si son productos que se venden en combos con otros de mejores márgenes de ganancias o bien considerar la posibilidad de discontinuar su venta.</p>")
               )
     ),
-    
-    nav_panel("📉 Riesgo", 
-              card(card_header("Productos con Menor Margen"), 
-                   div(class="table-responsive", tableOutput("tabla_riesgo")), 
-                   downloadButton("dl_riesgo", "Descargar Excel", class = "btn-download btn-info")))
+    nav_panel("📉 Riesgo", card(card_header("Productos con Menor Margen"), tableOutput("tabla_riesgo"), downloadButton("dl_riesgo", "Descargar Excel", class = "btn-download btn-info")))
   )
 )
 
