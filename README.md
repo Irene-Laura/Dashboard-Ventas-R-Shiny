@@ -5,8 +5,9 @@
 
 Este proyecto nació como un desafío tras completar los cursos de **Excel** y **Power BI**. Mi objetivo fue replicar la lógica de los dashboards realizados en los cursos pero utilizando el potencial de **R** y el paquete **Shiny**, para mostrar que es posible crear herramientas profesionales, dinámicas y publicables en la web mediante código.
 
-🔗 **[Ver la aplicación en vivo aquí](https://irenelaura.shinyapps.io/TiendaGolosinas/)**
-📄 **[Ver Reporte Analítico Estático (HTML)](https://tienda-golosinas.netlify.app/)**
+🔗 **[Acceder al Dashboard Interactivo (Shiny)](https://irenelaura.shinyapps.io/TiendaGolosinas/)**
+
+📄 **[Ver Reporte de Insights (RMarkdown/Netlify)](https://tienda-golosinas.netlify.app/)**
 
 ## 🚀 Funcionalidades Clave
 - **Visualización de KPIs:** Seguimiento de facturación, unidades vendidas y margen.
